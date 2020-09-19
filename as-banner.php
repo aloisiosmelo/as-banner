@@ -27,15 +27,14 @@ require_once('functions.php' );
 // Register actions
 add_action('admin_menu', 'theme_options_panel');
 add_action( 'plugins_loaded', 'as_banner_update_db_check' );
+add_action( 'admin_enqueue_scripts', 'load_admin_libs' );
 
 register_activation_hook( __FILE__, 'jal_install' );
 
-
-function load_admin_libs() {
+function load_admin_libs()
+{
     wp_enqueue_media();
-    wp_enqueue_script( 'wp-media-uploader',  plugin_dir_url(__FILE__).'admin/js/plupload.full.min.js', array( 'jquery' ), 1.0 );
 }
-add_action( 'admin_enqueue_scripts', 'load_admin_libs' );
 
 add_shortcode( 'as_banner', 'as_banner_process_shortcode' );
 function as_banner_process_shortcode( $attributes, $content = null ) {
