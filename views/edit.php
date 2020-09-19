@@ -9,7 +9,7 @@
 
                             <div class="form-field form-required term-name-wrap">
                                 <label for="banner[title]">Title</label>
-                                <input name="banner[title]" id="banner-title" type="text" value="<?= $banner['title']?>" size="255" aria-required="true">
+                                <input required maxlength="150" name="banner[title]" id="banner-title" type="text" value="<?= $banner['title']?>" size="255" aria-required="true">
                             </div>
 
                             <div class="form-field">
@@ -43,7 +43,7 @@
                                 <td>
                                     <div class="form-field form-required term-name-wrap">
                                         <label for="item[<?=$key?>][title]">Title</label>
-                                        <input name="item[<?=$key?>][title]" type="text" value="<?= $item['title']?>" size="250" aria-required="true">
+                                        <input required maxlength="150" name="item[<?=$key?>][title]" type="text" value="<?= $item['title']?>" size="250" aria-required="true">
                                         <input name="item[<?=$key?>][id]" type="hidden" value="<?= $item['id'] ?>">
                                         <input name="item[<?=$key?>][banner_id]" type="hidden" value="<?= $item['banner_id'] ?>">
                                     </div>
@@ -51,7 +51,7 @@
                                 <td>
                                     <div class="form-field form-required term-name-wrap">
                                         <label for="item[<?=$key?>][description]">Description</label>
-                                        <textarea name="item[<?=$key?>][description]" rows="3" cols="50"><?= $item['description']?></textarea>
+                                        <textarea required maxlength="250" name="item[<?=$key?>][description]" rows="3" cols="50"><?= $item['description']?></textarea>
                                     </div>
                                 </td>
                                 <td>
@@ -119,7 +119,7 @@
                 // tittle td
                 tr += '<td><div class="form-field form-required term-name-wrap">';
                 tr += '<label for="item['+attachmentsCount+'][title]">Title</label>';
-                tr += '<input name="item['+attachmentsCount+'][title]" type="text" value="" size="250" aria-required="true">';
+                tr += '<input required maxlength="150" name="item['+attachmentsCount+'][title]" type="text" value="" size="250" aria-required="true">';
                 tr += '<input name="item['+attachmentsCount+'][id]" type="hidden" value="">';
                 tr += '<input name="item['+attachmentsCount+'][banner_id]" type="hidden" value="'+banner_id+'">';
                 tr += '</div></td>';
@@ -127,7 +127,7 @@
                 // descriptions td
                 tr += '<td><div class="form-field form-required term-name-wrap">';
                 tr += '<label for="item['+attachmentsCount+'][description]">Description</label>';
-                tr += '<textarea name="item['+attachmentsCount+'][description]" rows="3" cols="50"></textarea>';
+                tr += '<textarea required maxlength="250" name="item['+attachmentsCount+'][description]" rows="3" cols="50"></textarea>';
                 tr += '</div></td>';
 
                 // image td

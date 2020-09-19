@@ -17,8 +17,8 @@ defined('ABSPATH') or die('No script kiddies please!');
  * Domain Path:       /languages
  */
 
+// Includes
 require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-
 require_once('install.php' );
 require_once('db.php' );
 require_once('functions.php' );

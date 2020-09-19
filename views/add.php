@@ -9,7 +9,7 @@
 
                         <div class="form-field form-required term-name-wrap">
                             <label for="banner[title]">Title</label>
-                            <input name="banner[title]" id="banner-title" type="text" size="255" aria-required="true">
+                            <input required name="banner[title]" id="banner-title" type="text" size="255" maxlength="150" aria-required="true">
                         </div>
 
                         <div class="form-field">
@@ -82,14 +82,14 @@
                 // tittle td
                 tr += '<td><div class="form-field form-required term-name-wrap">';
                 tr += '<label for="item['+attachmentsCount+'][title]">Title</label>';
-                tr += '<input name="item['+attachmentsCount+'][title]" type="text" value="" size="250" aria-required="true">';
-                tr += '<input name="item['+attachmentsCount+'][id]" type="hidden" value="">';
+                tr += '<input required maxlength="150" name="item['+attachmentsCount+'][title]" type="text" value="" size="250" aria-required="true">';
+                tr += '<input maxlength="250" name="item['+attachmentsCount+'][id]" type="hidden" value="">';
                 tr += '</div></td>';
 
                 // descriptions td
                 tr += '<td><div class="form-field form-required term-name-wrap">';
                 tr += '<label for="item['+attachmentsCount+'][description]">Description</label>';
-                tr += '<textarea name="item['+attachmentsCount+'][description]" rows="3" cols="50"></textarea>';
+                tr += '<textarea required maxlength="250" name="item['+attachmentsCount+'][description]" rows="3" cols="50"></textarea>';
                 tr += '</div></td>';
 
                 // image td
