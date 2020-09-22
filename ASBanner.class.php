@@ -4,14 +4,18 @@ require_once ('ASBannerQuery.class.php');
 require_once ('functions.php');
 
 class ASBanner {
+    
     public function __construct()
     {
 
+        $this->DB = new ASBannerQuery();
         add_action('admin_menu', array(&$this,'admin_menu_options_panel'));
         add_action( 'admin_enqueue_scripts', array(&$this,'load_admin_libs' ));
         add_shortcode( 'as_banner', array(&$this,'process_shortcode' ));
-        $this->DB = new ASBannerQuery();
-
+        if (is_admin()) {
+            register_activation_hook( __FILE__, array(&$this,'install' ));
+            register_deactivation_hook( __FILE__,array(&$this,'uninstall' ));
+        }
     }
 
     function load_admin_libs()
@@ -40,6 +44,54 @@ class ASBanner {
         } else {
             return '';
         }
+    }
+
+    function install()
+    {
+        global $wpdb;
+        $charset_collate = $wpdb->get_charset_collate();
+
+        $as_banners = $wpdb->prefix . 'as_banners';
+        $as_banners_itens = $wpdb->prefix . 'as_banners_itens';
+
+        $sql = "CREATE TABLE IF NOT EXISTS $as_banners (
+		id MEDIUMINT(9) NOT NULL AUTO_INCREMENT,
+		user_id BIGINT(20) NOT NULL,
+		created DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL,
+		published TINYINT DEFAULT 0 NOT NULL,
+		title TINYTEXT NOT NULL,
+		PRIMARY KEY  (id)
+        ) $charset_collate;";
+
+        $sql2 = "
+            CREATE TABLE IF NOT EXISTS $as_banners_itens (
+            id MEDIUMINT(9) NOT NULL AUTO_INCREMENT,
+            banner_id MEDIUMINT(9) NOT NULL,
+            url VARCHAR(55) DEFAULT '',
+            title VARCHAR(250) DEFAULT '',
+            description VARCHAR(500) DEFAULT '',
+            image_attachment_id MEDIUMINT(9) NOT NULL,
+            PRIMARY KEY  (id)
+        ) $charset_collate;";
+
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        dbDelta($sql);
+        dbDelta($sql2);
+
+        add_option('asbanner_db_version', '1.0');
+    }
+
+    function uninstall()
+    {
+        global $wpdb;
+        $as_banners = $wpdb->prefix . 'as_banners';
+        $as_banners_itens = $wpdb->prefix . 'as_banners_itens';
+
+        $sql = "DROP TABLE IF EXISTS $as_banners";
+        $sql .=  "DROP TABLE IF EXISTS $as_banners_itens";;
+        $wpdb->query($sql);
+
+        delete_option("asbanner_db_version");
     }
 
     function renderView($view)
