@@ -184,10 +184,10 @@ class ASBanner {
                     printf('<div class="notice notice-success is-dismissible"><p>%1$s</p></div>', 'Save error.');
                 }
 
-                self::renderView();
+                self::renderView('');
 
             } else {
-                self::renderView();
+                self::renderView('');
             }
         }
     }
@@ -212,7 +212,7 @@ class ASBanner {
 
                 if($insert_banner === FALSE){
                     printf('<div class="notice notice-success is-dismissible"><p>%1$s</p></div>', 'Save error.');
-                    self::renderView();
+                    self::renderView('');
                 } else if(!empty($_POST['item'])){
                     foreach ($_POST['item'] as $item){
                         $data_item = [
@@ -223,13 +223,13 @@ class ASBanner {
                         ];
                         if($this->DB->insertBannerItem($data_item) === FALSE){
                             printf('<div class="notice notice-error is-dismissible"><p>%1$s</p></div>', 'Save item error.');
-                            self::renderView();
+                            self::renderView('');
                         }
                     }
                 }
 
                 printf('<div class="notice notice-success is-dismissible"><p>%1$s</p></div>', 'Banner successful created.');
-                self::renderView();
+                self::renderView('');
             }
 
         }
