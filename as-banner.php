@@ -22,4 +22,3 @@ register_deactivation_hook( __FILE__, array( 'ASBanner', 'deactivation' ) );
 if(class_exists('ASBanner')) {
     $asBanner_obj = new ASBanner();
 }
-
