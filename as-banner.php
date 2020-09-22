@@ -14,7 +14,6 @@
  * Domain Path:       /languages
  */
 
-require_once('db.php' );
 require_once('functions.php' );
 require_once('ASBanner.class.php' );
 

@@ -82,7 +82,7 @@ class ASBanner {
                     'published' => $this->DB->cleanNumber($_POST['banner']['published']),
                 ];
 
-                if(updateBanner($data) === FALSE){
+                if($this->DB->updateBanner($data) === FALSE){
                     printf('<div class="notice notice-error is-dismissible"><p>%1$s</p></div>', 'Save error.');
                     self::admin_edit_view($_GET['eId']);
                 }
@@ -108,7 +108,7 @@ class ASBanner {
                             'image_attachment_id' => sanitize_text_field($item['image_attachment_id']),
                             'banner_id' => $this->DB->cleanNumber($item['banner_id']),
                         ];
-                        if(insertBannerItem($data_item) === FALSE){
+                        if($this->DB->insertBannerItem($data_item) === FALSE){
                             printf('<div class="notice notice-error is-dismissible"><p>%1$s</p></div>', 'Save item error.');
                             self::admin_edit_view($_GET['eId']);
                         }
@@ -160,7 +160,7 @@ class ASBanner {
                     'created' => date('Y-m-d H:i:s')
                 ];
 
-                $insert_banner = insertBanner($data); // return last id if save
+                $insert_banner = $this->DB->insertBanner($data); // return last id if save
 
                 if($insert_banner === FALSE){
                     printf('<div class="notice notice-success is-dismissible"><p>%1$s</p></div>', 'Save error.');
@@ -173,7 +173,7 @@ class ASBanner {
                             'image_attachment_id' => sanitize_text_field($item['image_attachment_id']),
                             'banner_id' => $insert_banner,
                         ];
-                        if(insertBannerItem($data_item) === FALSE){
+                        if($this->DB->insertBannerItem($data_item) === FALSE){
                             printf('<div class="notice notice-error is-dismissible"><p>%1$s</p></div>', 'Save item error.');
                             self::renderView();
                         }
