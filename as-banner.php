@@ -132,6 +132,8 @@ function as_add_render()
     require_once('views/add.php' );
 }
 
+
+
 function as_banner_admin_edit()
 {
     if ((is_admin() || __enquetes_check_user_role('editor'))) {
@@ -223,7 +225,7 @@ function as_banner_admin_add()
             $data = [
                 'title' => sanitize_text_field($_POST['banner']['title']),
                 'published' => cleanNumber($_POST['banner']['published']),
-                'created' => wp_date('Y-m-d H:i:s')
+                'created' => date('Y-m-d H:i:s')
             ];
 
             $insert_banner = insertBanner($data); // return last id if save
