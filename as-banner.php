@@ -14,9 +14,12 @@
  * Domain Path:       /languages
  */
 
-require_once('functions.php' );
 require_once('ASBanner.class.php' );
+
+register_activation_hook( __FILE__, array( 'ASBanner', 'activate' ) );
+register_deactivation_hook( __FILE__, array( 'ASBanner', 'deactivation' ) );
 
 if(class_exists('ASBanner')) {
     $asBanner_obj = new ASBanner();
 }
+

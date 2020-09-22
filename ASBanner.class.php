@@ -12,10 +12,6 @@ class ASBanner {
         add_action('admin_menu', array(&$this,'admin_menu_options_panel'));
         add_action( 'admin_enqueue_scripts', array(&$this,'load_admin_libs' ));
         add_shortcode( 'as_banner', array(&$this,'process_shortcode' ));
-        if (is_admin()) {
-            register_activation_hook( __FILE__, array(&$this,'install' ));
-            register_deactivation_hook( __FILE__,array(&$this,'uninstall' ));
-        }
     }
 
     function load_admin_libs()
@@ -46,7 +42,7 @@ class ASBanner {
         }
     }
 
-    function install()
+    function activate()
     {
         global $wpdb;
         $charset_collate = $wpdb->get_charset_collate();
@@ -81,7 +77,7 @@ class ASBanner {
         add_option('asbanner_db_version', '1.0');
     }
 
-    function uninstall()
+    function deactivate()
     {
         global $wpdb;
         $as_banners = $wpdb->prefix . 'as_banners';
