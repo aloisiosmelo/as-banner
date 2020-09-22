@@ -1,7 +1,4 @@
-<?php
-
-defined('ABSPATH') or die('No script kiddies please!');
-
+<?php defined('ABSPATH') or die('No script kiddies please!');
 /**
  * Plugin Name:       AS-Banner
  * Plugin URI:        https://github.com/aloisiosmelo/as-banner
@@ -18,26 +15,70 @@ defined('ABSPATH') or die('No script kiddies please!');
  */
 
 // Includes
-require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-require_once('install.php' );
 require_once('db.php' );
 require_once('functions.php' );
+
+function asbanner_install()
+{
+    global $wpdb;
+    $charset_collate = $wpdb->get_charset_collate();
+
+    $as_banners = $wpdb->prefix . 'as_banners';
+    $as_banners_itens = $wpdb->prefix . 'as_banners_itens';
+
+    $sql = "CREATE TABLE IF NOT EXISTS $as_banners (
+		id MEDIUMINT(9) NOT NULL AUTO_INCREMENT,
+		user_id BIGINT(20) NOT NULL,
+		created DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL,
+		published TINYINT DEFAULT 0 NOT NULL,
+		title TINYTEXT NOT NULL,
+		PRIMARY KEY  (id)
+	) $charset_collate;";
+
+    $sql2 = "
+        CREATE TABLE IF NOT EXISTS $as_banners_itens (
+		id MEDIUMINT(9) NOT NULL AUTO_INCREMENT,
+	    banner_id MEDIUMINT(9) NOT NULL,
+	    url VARCHAR(55) DEFAULT '',
+	    title VARCHAR(250) DEFAULT '',
+	    description VARCHAR(500) DEFAULT '',
+	    image_attachment_id MEDIUMINT(9) NOT NULL,
+		PRIMARY KEY  (id)
+	) $charset_collate;";
+
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    dbDelta($sql);
+    dbDelta($sql2);
+
+    add_option('asbanner_db_version', '1.0');
+}
+
+function asbanner_remove_database() {
+    global $wpdb;
+    $as_banners = $wpdb->prefix . 'as_banners';
+    $as_banners_itens = $wpdb->prefix . 'as_banners_itens';
+
+    $sql = "DROP TABLE IF EXISTS $as_banners";
+    $sql .=  "DROP TABLE IF EXISTS $as_banners_itens";;
+    $wpdb->query($sql);
+
+    delete_option("jal_db_version");
+}
+
+register_deactivation_hook( __FILE__,'asbanner_remove_database' );
+register_activation_hook( __FILE__, 'asbanner_install' );
 
 
 // Register actions
 add_action('admin_menu', 'theme_options_panel');
-add_action( 'plugins_loaded', 'as_banner_update_db_check' );
 add_action( 'admin_enqueue_scripts', 'load_admin_libs' );
-
-register_activation_hook( __FILE__, 'jal_install' );
 
 function load_admin_libs()
 {
     wp_enqueue_media();
 }
 
-add_shortcode( 'as_banner', 'as_banner_process_shortcode' );
-function as_banner_process_shortcode( $attributes, $content = null ) {
+function as_banner_process_shortcode( $attributes, $content) {
     extract( shortcode_atts( array(
         'id' => ''
     ), $attributes ) );
@@ -50,6 +91,7 @@ function as_banner_process_shortcode( $attributes, $content = null ) {
         return '';
     }
 }
+add_shortcode( 'as_banner', 'as_banner_process_shortcode' );
 
 
 /*

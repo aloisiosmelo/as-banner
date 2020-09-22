@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') or die('No script kiddies please!');
 
  function getBanners()
 {
@@ -13,7 +14,7 @@ function cleanNumber($id)
     return (int) preg_replace( '/[^0-9]/', '', $id );
 }
 
-function getActiveBannersItensById($id=null)
+function getActiveBannersItensById($id)
 {
     if(empty($id)) return [];
     $id = preg_replace( '/[^0-9]/', '', $id );
@@ -31,7 +32,7 @@ function getActiveBannersItensById($id=null)
     return (!empty($exit) ? $exit : [] );
 }
 
-function getBannersItensById($id=null)
+function getBannersItensById($id)
 {
     if(empty($id)) return [];
     $id = preg_replace( '/[^0-9]/', '', $id );
@@ -49,7 +50,7 @@ function getBannersItensById($id=null)
     return (!empty($exit) ? $exit : [] );
 }
 
-function getBannerById($id=null)
+function getBannerById($id)
 {
     if(empty($id)) return [];
     $id = preg_replace( '/[^0-9]/', '', $id );
@@ -64,7 +65,7 @@ function getBannerById($id=null)
     return (!empty($exit) ? end($exit) : [] );
 }
 
-function insertBanner($data = null)
+function insertBanner($data)
 {
     global $wpdb;
     if(empty($data)) return true;
@@ -78,7 +79,7 @@ function insertBanner($data = null)
     }
 }
 
-function updateBanner($data = null)
+function updateBanner($data)
 {
     global $wpdb;
     if(empty($data)) return true;
@@ -92,7 +93,7 @@ function updateBanner($data = null)
     );
 }
 
-function updateBannerItem($data = null)
+function updateBannerItem($data)
 {
     global $wpdb;
     if(empty($data)) return true;
@@ -106,7 +107,7 @@ function updateBannerItem($data = null)
     );
 }
 
-function insertBannerItem($data = null)
+function insertBannerItem($data)
 {
     global $wpdb;
     if(empty($data)) return true;
@@ -117,7 +118,7 @@ function insertBannerItem($data = null)
 
 
 
-function deleteBanner($id = null)
+function deleteBanner($id)
 {
     global $wpdb;
     if(empty($id)) return true;
@@ -128,22 +129,4 @@ function deleteBanner($id = null)
         $table_name,
         array('id' => $id)
     );
-}
-
-function my_print_error(){
-
-    global $wpdb;
-
-    if($wpdb->last_error !== '') :
-
-        $str   = htmlspecialchars( $wpdb->last_result, ENT_QUOTES );
-        $query = htmlspecialchars( $wpdb->last_query, ENT_QUOTES );
-
-        print "<div id='error'>
-        <p class='wpdberror'><strong>WordPress database error:</strong> [$str]<br />
-        <code>$query</code></p>
-        </div>";
-
-    endif;
-
 }

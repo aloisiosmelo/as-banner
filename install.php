@@ -1,68 +1,57 @@
 <?php
+defined('ABSPATH') or die('No script kiddies please!');
 
-global $jal_db_version;
-$jal_db_version = '1.0';
-
-// Update
-function as_banner_update_db_check() {
-    global $jal_db_version;
-    if ( get_site_option( 'jal_db_version' ) != $jal_db_version ) {
-        jal_install();
-    }
-}
+global $asbanner_db_version;
+$asbanner_db_version = '1.0';
 
 // Install
-function jal_install() {
+function asbanner_install()
+{
     global $wpdb;
-    global $jal_db_version;
-
-    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-
-    $table_name = $wpdb->prefix . 'as_banners';
-
+    global $asbanner_db_version;
     $charset_collate = $wpdb->get_charset_collate();
+    $asbanner_db_version = '1.0';
 
-    $sql = "CREATE TABLE $table_name (
-		id mediumint(9) NOT NULL AUTO_INCREMENT,
-		user_id bigint(20) NOT NULL,
-		created datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-		published tinyint DEFAULT 0 NOT NULL,
-		title tinytext NOT NULL,
+    $as_banners = $wpdb->prefix . 'as_banners';
+    $as_banners_itens = $wpdb->prefix . 'as_banners_itens';
+
+    $sql = "CREATE TABLE IF NOT EXISTS $as_banners (
+		id MEDIUMINT(9) NOT NULL AUTO_INCREMENT,
+		user_id BIGINT(20) NOT NULL,
+		created DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL,
+		published TINYINT DEFAULT 0 NOT NULL,
+		title TINYTEXT NOT NULL,
 		PRIMARY KEY  (id)
 	) $charset_collate;";
 
-    dbDelta( $sql );
-
-    $table_name_2 = $wpdb->prefix . 'as_banners_itens';
-    $sql_2 = "CREATE TABLE $table_name_2 (
-		id mediumint(9) NOT NULL AUTO_INCREMENT,
-	    banner_id mediumint(9) NOT NULL,
-	    url varchar(55) DEFAULT '',
-	    title varchar(250) DEFAULT '',
-	    description varchar(500) DEFAULT '',
-	    image_attachment_id mediumint(9) NOT NULL,
+    $sql .= "
+        CREATE TABLE IF NOT EXISTS $as_banners_itens (
+		id MEDIUMINT(9) NOT NULL AUTO_INCREMENT,
+	    banner_id MEDIUMINT(9) NOT NULL,
+	    url VARCHAR(55) DEFAULT '',
+	    title VARCHAR(250) DEFAULT '',
+	    description VARCHAR(500) DEFAULT '',
+	    image_attachment_id MEDIUMINT(9) NOT NULL,
 		PRIMARY KEY  (id)
 	) $charset_collate;";
 
-    dbDelta( $sql_2 );
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    dbDelta($sql);
 
-    add_option( 'jal_db_version', $jal_db_version );
+    add_option('asbanner_db_version', $asbanner_db_version);
 }
 
-function jal_install_data() {
+function asbanner_remove_database() {
     global $wpdb;
+    $as_banners = $wpdb->prefix . 'as_banners';
+    $as_banners_itens = $wpdb->prefix . 'as_banners_itens';
 
-    $welcome_name = 'Mr. WordPress';
-    $welcome_text = 'Congratulations, you just completed the installation!';
+    $sql = "DROP TABLE IF EXISTS $as_banners";
+    $sql .=  "DROP TABLE IF EXISTS $as_banners_itens";;
+    $wpdb->query($sql);
 
-    $table_name = $wpdb->prefix . 'as_banners';
-
-    $wpdb->insert(
-        $table_name,
-        array(
-            'time' => current_time( 'mysql' ),
-            'name' => $welcome_name,
-            'text' => $welcome_text,
-        )
-    );
+    delete_option("jal_db_version");
 }
+
+register_deactivation_hook( __FILE__,'asbanner_remove_database' );
+register_activation_hook( __FILE__, 'asbanner_install' );
