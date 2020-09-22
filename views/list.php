@@ -14,8 +14,8 @@
         </tr>
         </thead>
         <tbody id="the-list">
-        <?php if(!empty(getBanners())): ?>
-            <?php foreach (getBanners() as $banner): ?>
+        <?php if(!empty($this->DB->getBanners())): ?>
+            <?php foreach ($this->DB->getBanners() as $banner): ?>
                 <tr id="post-2" class="iedit author-self level-0 post-2 type-page status-publish hentry">
                     <td class="title column-title has-row-actions column-primary page-title" data-colname="Título">
                         <div class="locked-info"><span class="locked-avatar"></span> <span class="locked-text"></span></div>

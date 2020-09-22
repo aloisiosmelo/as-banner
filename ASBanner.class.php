@@ -1,6 +1,7 @@
 <?php
 defined('ABSPATH') or die('No script kiddies please!');
 require_once ('ASBannerQuery.class.php');
+require_once ('functions.php');
 
 class ASBanner {
     public function __construct()
@@ -34,69 +35,88 @@ class ASBanner {
 
         if(!empty($attributes['id'])){
             global $banners;
-            $banners = getActiveBannersItensById($attributes['id']);
+            $banners = $this->DB->getActiveBannersItensById($attributes['id']);
             return require_once('views/banner.php' );
         } else {
             return '';
         }
     }
 
-    function renderView($view = 'views/list')
+    function renderView($view)
     {
+        $view = empty($view) ? 'views/list': $view;
         return require_once($view.'.php' );
+    }
+
+    function admin_edit_view ($id)
+    {
+        $id = $this->DB->cleanNumber($id);
+
+        global $banner;
+        global $banner_itens;
+
+        $banner = $this->DB->getBannerById($id);
+        $banner_itens = $this->DB->getBannersItensById($id);
+
+        require_once('views/edit.php' );
+    }
+
+    function admin_add_view()
+    {
+        self::renderView('views/add' );
     }
 
     function admin_edit()
     {
-        if ((is_admin() || __enquetes_check_user_role('editor'))) {
+        if ((is_admin() || __asbanner_check_user_role('editor'))) {
 
             if (isset($_GET['eId']) && !isset($_POST['submit'])) {
 
-                as_edit_render($_GET['eId']);
+                self::admin_edit_view($_GET['eId']);
 
             } else {
 
                 $data = [
-                    'id' => cleanNumber($_GET['eId']),
+                    'id' => $this->DB->cleanNumber($_GET['eId']),
                     'title' => sanitize_text_field($_POST['banner']['title']),
-                    'published' => cleanNumber($_POST['banner']['published']),
+                    'published' => $this->DB->cleanNumber($_POST['banner']['published']),
                 ];
 
                 if(updateBanner($data) === FALSE){
                     printf('<div class="notice notice-error is-dismissible"><p>%1$s</p></div>', 'Save error.');
-                    as_edit_render($_GET['eId']);
+                    self::admin_edit_view($_GET['eId']);
                 }
 
                 foreach ($_POST['item'] as $item){
                     $data_item = [];
                     if(!empty($item['id'])){
                         $data_item = [
-                            'id' => cleanNumber($item['id']),
+                            'id' => $this->DB->cleanNumber($item['id']),
                             'title' => sanitize_text_field($item['title']),
                             'description' => sanitize_text_field($item['description']),
                             'image_attachment_id' => sanitize_text_field($item['image_attachment_id']),
-                            'banner_id' => cleanNumber($item['banner_id']),
+                            'banner_id' => $this->DB->cleanNumber($item['banner_id']),
                         ];
-                        if(updateBannerItem($data_item) === FALSE){
+                        if($this->DB->updateBannerItem($data_item) === FALSE){
                             printf('<div class="notice notice-error is-dismissible"><p>%1$s</p></div>', 'Update item error.');
-                            as_edit_render($_GET['eId']);
+                            self::admin_edit_view($_GET['eId']);
                         }
                     } else {
                         $data_item = [
                             'title' => sanitize_text_field($item['title']),
                             'description' => sanitize_text_field($item['description']),
                             'image_attachment_id' => sanitize_text_field($item['image_attachment_id']),
-                            'banner_id' => cleanNumber($item['banner_id']),
+                            'banner_id' => $this->DB->cleanNumber($item['banner_id']),
                         ];
                         if(insertBannerItem($data_item) === FALSE){
                             printf('<div class="notice notice-error is-dismissible"><p>%1$s</p></div>', 'Save item error.');
-                            as_edit_render($_GET['eId']);
+                            self::admin_edit_view($_GET['eId']);
                         }
                     }
                 }
 
                 printf('<div class="notice notice-success is-dismissible"><p>%1$s</p></div>', 'Banner successful updated.');
-                as_edit_render($_GET['eId']);
+                self::admin_edit_view($_GET['eId']);
 
             }
         }
@@ -104,39 +124,39 @@ class ASBanner {
 
     function admin_delete()
     {
-        if ((is_admin() || __enquetes_check_user_role('editor'))) {
+        if ((is_admin() || __asbanner_check_user_role('editor'))) {
 
             if (isset($_GET['eId'])) {
 
-                $banner_id = cleanNumber($_GET['eId']);
+                $banner_id = $this->DB->cleanNumber($_GET['eId']);
 
-                if(deleteBanner($banner_id)){
+                if($this->DB->deleteBanner($banner_id)){
                     printf('<div class="notice notice-success is-dismissible"><p>%1$s</p></div>', 'Banner successful deleted.');
                 } else {
                     printf('<div class="notice notice-success is-dismissible"><p>%1$s</p></div>', 'Save error.');
                 }
 
-                initialize_asbanner();
+                self::renderView();
 
             } else {
-                initialize_asbanner();
+                self::renderView();
             }
         }
     }
 
     function admin_add()
     {
-        if ((is_admin() || __enquetes_check_user_role('editor'))) {
+        if ((is_admin() || __asbanner_check_user_role('editor'))) {
 
             if (!isset($_POST['submit'])) {
 
-                as_add_render();
+                self::admin_add_view();
 
             } else {
 
                 $data = [
                     'title' => sanitize_text_field($_POST['banner']['title']),
-                    'published' => cleanNumber($_POST['banner']['published']),
+                    'published' => $this->DB->cleanNumber($_POST['banner']['published']),
                     'created' => date('Y-m-d H:i:s')
                 ];
 
@@ -144,7 +164,7 @@ class ASBanner {
 
                 if($insert_banner === FALSE){
                     printf('<div class="notice notice-success is-dismissible"><p>%1$s</p></div>', 'Save error.');
-                    initialize_asbanner();
+                    self::renderView();
                 } else if(!empty($_POST['item'])){
                     foreach ($_POST['item'] as $item){
                         $data_item = [
@@ -155,13 +175,13 @@ class ASBanner {
                         ];
                         if(insertBannerItem($data_item) === FALSE){
                             printf('<div class="notice notice-error is-dismissible"><p>%1$s</p></div>', 'Save item error.');
-                            initialize_asbanner();
+                            self::renderView();
                         }
                     }
                 }
 
                 printf('<div class="notice notice-success is-dismissible"><p>%1$s</p></div>', 'Banner successful created.');
-                initialize_asbanner();
+                self::renderView();
             }
 
         }

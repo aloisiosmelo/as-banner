@@ -1,7 +1,7 @@
 <?php
 defined('ABSPATH') or die('No script kiddies please!');
 class ASBannerQuery {
-    function getBanners()
+    public function getBanners()
     {
         global $wpdb;
         $table_name = $wpdb->prefix . 'as_banners';
